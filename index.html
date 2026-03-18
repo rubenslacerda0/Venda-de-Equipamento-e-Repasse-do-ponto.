@@ -29,6 +29,20 @@ header p {
   font-size: 16px;
 }
 
+.search-box {
+  margin-top: 15px;
+}
+
+.search-box input {
+  width: 90%;
+  max-width: 400px;
+  padding: 10px;
+  border-radius: 30px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
 .container {
   padding: 20px;
   max-width: 1200px;
@@ -113,6 +127,10 @@ header p {
 <header>
   <h1>🔥 Venda de Equipamentos 🔥</h1>
   <p>Itens com preços abaixo do mercado — oportunidade única</p>
+
+  <div class="search-box">
+    <input type="text" id="pesquisa" placeholder="🔍 Buscar item..." onkeyup="filtrarProdutos()">
+  </div>
 </header>
 
 <div class="container">
@@ -135,10 +153,11 @@ const produtos = [
   }
 ];
 
-function carregarProdutos() {
+function carregarProdutos(lista = produtos) {
   const container = document.getElementById("produtos");
+  container.innerHTML = "";
 
-  produtos.forEach((p, i) => {
+  lista.forEach((p) => {
     container.innerHTML += `
       <div class="card">
         <img src="${p.imagem}">
@@ -167,6 +186,17 @@ function carregarProdutos() {
       </div>
     `;
   });
+}
+
+function filtrarProdutos() {
+  const termo = document.getElementById("pesquisa").value.toLowerCase();
+
+  const filtrados = produtos.filter(p =>
+    p.nome.toLowerCase().includes(termo) ||
+    p.descricao.toLowerCase().includes(termo)
+  );
+
+  carregarProdutos(filtrados);
 }
 
 function calcular() {
