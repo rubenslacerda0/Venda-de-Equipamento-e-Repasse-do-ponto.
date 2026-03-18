@@ -73,18 +73,6 @@ header p {
   color: #555;
 }
 
-.preco-antigo {
-  text-decoration: line-through;
-  color: #888;
-  font-size: 14px;
-}
-
-.preco-novo {
-  color: #ff3c00;
-  font-size: 22px;
-  font-weight: bold;
-}
-
 .checkbox {
   margin-top: 10px;
 }
@@ -158,8 +146,18 @@ function carregarProdutos() {
           <h3>${p.nome}</h3>
           <p>${p.descricao}</p>
 
-          <div class="preco-antigo">De: R$ ${p.precoNovo}</div>
-          <div class="preco-novo">Por: R$ ${p.precoVenda}</div>
+          <div style="margin-top:10px;">
+            <div style="font-size:12px; color:#777;">
+              Média do item novo:
+            </div>
+            <div style="text-decoration: line-through; color:#999; font-size:14px;">
+              R$ ${p.precoNovo}
+            </div>
+
+            <div style="margin-top:5px; color:#ff3c00; font-size:22px; font-weight:bold;">
+              R$ ${p.precoVenda}
+            </div>
+          </div>
 
           <div class="checkbox">
             <input type="checkbox" value="${p.precoVenda}" onchange="calcular()" data-nome="${p.nome}">
