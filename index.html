@@ -10,6 +10,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   background: #f5f5f5;
+  padding-bottom: 100px;
 }
 
 header {
@@ -17,16 +18,6 @@ header {
   color: white;
   text-align: center;
   padding: 20px;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 28px;
-}
-
-header p {
-  margin: 5px 0 0;
-  font-size: 16px;
 }
 
 .search-box {
@@ -39,8 +30,6 @@ header p {
   padding: 10px;
   border-radius: 30px;
   border: none;
-  outline: none;
-  font-size: 14px;
 }
 
 .container {
@@ -60,11 +49,6 @@ header p {
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   overflow: hidden;
-  transition: 0.2s;
-}
-
-.card:hover {
-  transform: scale(1.03);
 }
 
 .card img {
@@ -77,31 +61,21 @@ header p {
   padding: 15px;
 }
 
-.card h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.card p {
-  font-size: 14px;
-  color: #555;
-}
-
 .checkbox {
   margin-top: 10px;
 }
 
+/* 🔥 BOTÃO FIXO */
 .footer {
   position: fixed;
   bottom: 0;
   width: 100%;
   background: white;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
   padding: 10px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
 }
 
 .total {
-  font-size: 18px;
   font-weight: bold;
 }
 
@@ -112,12 +86,6 @@ header p {
   border: none;
   width: 100%;
   border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.btn:hover {
-  background: #1ebd5a;
 }
 </style>
 </head>
@@ -126,10 +94,16 @@ header p {
 
 <header>
   <h1>🔥 Venda de Equipamentos 🔥</h1>
-  <p>Itens com preços abaixo do mercado — oportunidade única</p>
+  <p>Itens com preços abaixo do mercado</p>
 
   <div class="search-box">
     <input type="text" id="pesquisa" placeholder="🔍 Buscar item..." onkeyup="filtrarProdutos()">
+  </div>
+
+  <!-- 🔥 SELECIONAR TODOS -->
+  <div style="margin-top:10px;">
+    <input type="checkbox" onclick="selecionarTodos(this)">
+    Selecionar todos os itens
   </div>
 </header>
 
@@ -139,14 +113,14 @@ header p {
 
 <div class="footer">
   <div class="total">Total: R$ <span id="total">0</span></div>
-  <button class="btn" onclick="enviarWhats()">Enviar seleção no WhatsApp</button>
+  <button class="btn" onclick="enviarWhats()">Enviar no WhatsApp</button>
 </div>
 
 <script>
 const produtos = [
   {
     nome: "Exemplo de Item",
-    descricao: "Produto em ótimo estado, pronto para uso",
+    descricao: "Produto em ótimo estado",
     precoNovo: 200,
     precoVenda: 100,
     imagem: "https://via.placeholder.com/300"
@@ -165,15 +139,12 @@ function carregarProdutos(lista = produtos) {
           <h3>${p.nome}</h3>
           <p>${p.descricao}</p>
 
-          <div style="margin-top:10px;">
-            <div style="font-size:12px; color:#777;">
-              Média do item novo:
-            </div>
-            <div style="text-decoration: line-through; color:#999; font-size:22px;">
+          <div>
+            <div style="font-size:12px;color:#777;">Média do item novo:</div>
+            <div style="text-decoration:line-through;font-size:22px;color:#999;">
               R$ ${p.precoNovo}
             </div>
-
-            <div style="margin-top:5px; color:#ff3c00; font-size:22px; font-weight:bold;">
+            <div style="color:#ff3c00;font-size:22px;font-weight:bold;">
               R$ ${p.precoVenda}
             </div>
           </div>
@@ -199,19 +170,27 @@ function filtrarProdutos() {
   carregarProdutos(filtrados);
 }
 
+function selecionarTodos(master) {
+  const checkboxes = document.querySelectorAll(".checkbox input");
+  checkboxes.forEach(cb => {
+    cb.checked = master.checked;
+  });
+  calcular();
+}
+
 function calcular() {
   let total = 0;
-  document.querySelectorAll("input:checked").forEach(el => {
+  document.querySelectorAll(".checkbox input:checked").forEach(el => {
     total += parseFloat(el.value);
   });
   document.getElementById("total").innerText = total.toFixed(2);
 }
 
 function enviarWhats() {
-  let msg = "Olá, tenho interesse nos seguintes itens:%0A";
+  let msg = "Olá, tenho interesse:%0A";
   let total = 0;
 
-  document.querySelectorAll("input:checked").forEach(el => {
+  document.querySelectorAll(".checkbox input:checked").forEach(el => {
     msg += "- " + el.dataset.nome + "%0A";
     total += parseFloat(el.value);
   });
