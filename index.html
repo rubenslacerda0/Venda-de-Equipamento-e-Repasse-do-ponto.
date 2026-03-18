@@ -60,8 +60,9 @@ header {
   background: rgba(0,0,0,0.5);
   color: white;
   border: none;
-  padding: 5px;
+  padding: 5px 10px;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 .esq { left: 5px; }
@@ -85,6 +86,7 @@ header {
   padding: 10px;
   width: 100%;
   border: none;
+  border-radius: 5px;
 }
 </style>
 </head>
@@ -150,10 +152,12 @@ function carregarProdutos(lista) {
       <div class="card">
         <div class="carousel">
           <img id="img${index}" src="${p.imagens[0]}">
+
           ${p.imagens.length > 1 ? `
             <button class="seta esq" onclick="trocar(${index}, -1)">‹</button>
             <button class="seta dir" onclick="trocar(${index}, 1)">›</button>
           ` : ""}
+
         </div>
 
         <div class="card-content">
@@ -180,6 +184,7 @@ function trocar(i, direcao) {
   p.index = p.index || 0;
 
   p.index += direcao;
+
   if (p.index < 0) p.index = p.imagens.length - 1;
   if (p.index >= p.imagens.length) p.index = 0;
 
@@ -188,10 +193,12 @@ function trocar(i, direcao) {
 
 function filtrarProdutos() {
   const termo = document.getElementById("pesquisa").value.toLowerCase();
+
   const filtrados = produtos.filter(p =>
     p.nome.toLowerCase().includes(termo) ||
     p.descricao.toLowerCase().includes(termo)
   );
+
   carregarProdutos(filtrados);
 }
 
