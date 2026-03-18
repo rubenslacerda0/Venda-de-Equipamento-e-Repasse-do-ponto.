@@ -2,91 +2,67 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Venda de Equipamentos</title>
 
 <style>
 body {
-  font-family: Arial;
-  margin: 0;
-  background: #f5f5f5;
-  padding-bottom: 120px;
+    font-family: Arial;
+    margin: 0;
+    background: #f5f5f5;
 }
 
 header {
-  background: linear-gradient(90deg, #ff3c00, #ff7a00);
-  color: white;
-  text-align: center;
-  padding: 20px;
+    background: linear-gradient(90deg,#ff6a00,#ff2e00);
+    color: white;
+    padding: 20px;
+    text-align: center;
 }
 
-.search-box input {
-  width: 90%;
-  padding: 10px;
-  border-radius: 30px;
-  border: none;
+input {
+    width: 80%;
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    margin-top: 10px;
 }
 
 .container {
-  padding: 20px;
-}
-
-.produtos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px;
+    gap: 20px;
 }
 
 .card {
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
+    background: white;
+    border-radius: 10px;
+    width: 280px;
+    padding: 15px;
 }
 
-.carousel {
-  position: relative;
+.card img {
+    width: 100%;
+    border-radius: 8px;
 }
 
-.carousel img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
+.preco-novo {
+    text-decoration: line-through;
+    color: gray;
 }
 
-.seta {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0,0,0,0.5);
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.esq { left: 5px; }
-.dir { right: 5px; }
-
-.card-content {
-  padding: 10px;
+.preco-venda {
+    color: #ff6a00;
+    font-weight: bold;
+    font-size: 20px;
 }
 
 .footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: white;
-  padding: 10px;
-}
-
-.btn {
-  background: #25D366;
-  color: white;
-  padding: 10px;
-  width: 100%;
-  border: none;
-  border-radius: 5px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: white;
+    padding: 10px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
 }
 </style>
 </head>
@@ -94,139 +70,145 @@ header {
 <body>
 
 <header>
-  <h1>🔥 Venda de Equipamentos 🔥</h1>
-
-  <div class="search-box">
-    <input type="text" id="pesquisa" onkeyup="filtrarProdutos()" placeholder="Buscar...">
-  </div>
-
-  <div>
-    <input type="checkbox" onclick="selecionarTodos(this)"> Selecionar todos
-  </div>
+<h2>🔥 Venda de Equipamentos 🔥</h2>
+<input type="text" id="busca" placeholder="Buscar produto..." onkeyup="filtrar()">
+<br>
+<label><input type="checkbox" onclick="selecionarTodos(this)"> Selecionar todos</label>
 </header>
 
-<div class="container">
-  <div class="produtos" id="produtos"></div>
-</div>
+<div class="container" id="produtos"></div>
 
 <div class="footer">
-  Total: R$ <span id="total">0</span>
-  <button class="btn" onclick="enviarWhats()">Enviar no WhatsApp</button>
+Total: R$ <span id="total">0</span>
+<button onclick="enviarWhats()">Enviar no WhatsApp</button>
 </div>
 
 <script>
-const sheetID = "1k-6QC6mC8h7z7TL4lEnfXNKUNv8C4qWOdU48pqIw4c4";
-const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
+const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSEU_LINK_AQUI/pub?output=csv";
 
 let produtos = [];
+let selecionados = [];
+
+function formatarPreco(valor){
+    return Number(valor).toLocaleString('pt-BR');
+}
 
 fetch(url)
 .then(res => res.text())
 .then(data => {
-  const json = JSON.parse(data.substr(47).slice(0, -2));
-  const rows = json.table.rows;
+    const linhas = data.split("\n").slice(1);
 
-  produtos = rows.map(r => ({
-    nome: r.c[0]?.v || "",
-    descricao: r.c[1]?.v || "",
-    precoNovo: r.c[2]?.v || 0,
-    precoVenda: r.c[3]?.v || 0,
-    imagens: [
-      r.c[4]?.v,
-      r.c[5]?.v,
-      r.c[6]?.v,
-      r.c[7]?.v,
-      r.c[8]?.v
-    ].filter(i => i)
-  }));
+    linhas.forEach(linha => {
+        const col = linha.split(",");
 
-  carregarProdutos(produtos);
+        let imagens = [col[4], col[5], col[6], col[7], col[8]].filter(i => i);
+
+        produtos.push({
+            nome: col[0],
+            descricao: col[1],
+            precoNovo: col[2],
+            precoVenda: col[3],
+            imagens: imagens
+        });
+    });
+
+    render();
 });
 
-function carregarProdutos(lista) {
-  const container = document.getElementById("produtos");
-  container.innerHTML = "";
+function render(){
+    const div = document.getElementById("produtos");
+    div.innerHTML = "";
 
-  lista.forEach((p, index) => {
-    container.innerHTML += `
-      <div class="card">
-        <div class="carousel">
-          <img id="img${index}" src="${p.imagens[0]}">
+    produtos.forEach((p,i)=>{
+        let img = p.imagens[0] || "";
 
-          ${p.imagens.length > 1 ? `
-            <button class="seta esq" onclick="trocar(${index}, -1)">‹</button>
-            <button class="seta dir" onclick="trocar(${index}, 1)">›</button>
-          ` : ""}
+        let carrossel = "";
 
+        if(p.imagens.length > 1){
+            carrossel = `
+            <div>
+                <img id="img${i}" src="${img}">
+                <br>
+                <button onclick="trocar(${i}, -1)">⬅️</button>
+                <button onclick="trocar(${i}, 1)">➡️</button>
+            </div>
+            `;
+        } else {
+            carrossel = `<img src="${img}">`;
+        }
+
+        div.innerHTML += `
+        <div class="card">
+            ${carrossel}
+            <h3>${p.nome}</h3>
+            <p>${p.descricao}</p>
+            <small>Média do item novo:</small><br>
+            <span class="preco-novo">R$ ${formatarPreco(p.precoNovo)}</span><br>
+            <span class="preco-venda">R$ ${formatarPreco(p.precoVenda)}</span><br><br>
+            <input type="checkbox" onchange="selecionar(${i}, this)">
         </div>
-
-        <div class="card-content">
-          <h3>${p.nome}</h3>
-          <p>${p.descricao}</p>
-
-          <div style="font-size:12px;color:#777;">Média do item novo:</div>
-          <div style="text-decoration:line-through;font-size:18px;color:#999;">
-            R$ ${p.precoNovo}
-          </div>
-          <div style="color:#ff3c00;font-size:22px;font-weight:bold;">
-            R$ ${p.precoVenda}
-          </div>
-
-          <input type="checkbox" value="${p.precoVenda}" onchange="calcular()" data-nome="${p.nome}">
-        </div>
-      </div>
-    `;
-  });
+        `;
+    });
 }
 
-function trocar(i, direcao) {
-  let p = produtos[i];
-  p.index = p.index || 0;
+function trocar(i, dir){
+    let imgs = produtos[i].imagens;
+    let imgTag = document.getElementById("img"+i);
 
-  p.index += direcao;
+    let atual = imgs.indexOf(imgTag.src);
+    let novo = (atual + dir + imgs.length) % imgs.length;
 
-  if (p.index < 0) p.index = p.imagens.length - 1;
-  if (p.index >= p.imagens.length) p.index = 0;
-
-  document.getElementById("img" + i).src = p.imagens[p.index];
+    imgTag.src = imgs[novo];
 }
 
-function filtrarProdutos() {
-  const termo = document.getElementById("pesquisa").value.toLowerCase();
-
-  const filtrados = produtos.filter(p =>
-    p.nome.toLowerCase().includes(termo) ||
-    p.descricao.toLowerCase().includes(termo)
-  );
-
-  carregarProdutos(filtrados);
+function selecionar(i, el){
+    if(el.checked){
+        selecionados.push(i);
+    } else {
+        selecionados = selecionados.filter(x=>x!=i);
+    }
+    atualizarTotal();
 }
 
-function selecionarTodos(master) {
-  document.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = master.checked);
-  calcular();
+function selecionarTodos(el){
+    selecionados = [];
+
+    document.querySelectorAll(".card input").forEach((c,i)=>{
+        c.checked = el.checked;
+        if(el.checked) selecionados.push(i);
+    });
+
+    atualizarTotal();
 }
 
-function calcular() {
-  let total = 0;
-  document.querySelectorAll("input[type=checkbox]:checked").forEach(el => {
-    total += parseFloat(el.value);
-  });
-  document.getElementById("total").innerText = total.toFixed(2);
+function atualizarTotal(){
+    let total = 0;
+    selecionados.forEach(i=>{
+        total += Number(produtos[i].precoVenda);
+    });
+
+    document.getElementById("total").innerText = formatarPreco(total);
 }
 
-function enviarWhats() {
-  let msg = "Olá, tenho interesse:%0A";
-  let total = 0;
+function filtrar(){
+    let termo = document.getElementById("busca").value.toLowerCase();
 
-  document.querySelectorAll("input[type=checkbox]:checked").forEach(el => {
-    msg += "- " + el.dataset.nome + "%0A";
-    total += parseFloat(el.value);
-  });
+    produtos = produtos.filter(p =>
+        p.nome.toLowerCase().includes(termo) ||
+        p.descricao.toLowerCase().includes(termo)
+    );
 
-  msg += "%0ATotal: R$ " + total.toFixed(2);
+    render();
+}
 
-  window.open(`https://wa.me/556292510089?text=${msg}`);
+function enviarWhats(){
+    let msg = "Olá, tenho interesse nos itens:%0A";
+
+    selecionados.forEach(i=>{
+        msg += "- " + produtos[i].nome + "%0A";
+    });
+
+    window.open(`https://wa.me/556292510089?text=${msg}`);
 }
 </script>
 
