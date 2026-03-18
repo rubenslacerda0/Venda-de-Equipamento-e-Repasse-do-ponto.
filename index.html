@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Venda de Equipamentos</title>
+</head>
+<body>
+
+<h2>Itens à venda</h2>
+
+<div id="lista"></div>
+
+<h3>Total: R$ <span id="total">0</span></h3>
+
+<button onclick="enviarWhats()">Enviar no WhatsApp</button>
+
+<script>
+const produtos = [
+  {nome: "Chapa industrial", preco: 2000},
+  {nome: "Freezer", preco: 1500},
+  {nome: "Mesa inox", preco: 800},
+  {nome: "Geladeira", preco: 1200}
+];
+
+const lista = document.getElementById("lista");
+
+produtos.forEach((p, i) => {
+  lista.innerHTML += `
+    <input type="checkbox" onchange="calcular()" value="${p.preco}">
+    ${p.nome} - R$ ${p.preco}<br>
+  `;
+});
+
+function calcular() {
+  let total = 0;
+  document.querySelectorAll("input:checked").forEach(el => {
+    total += parseFloat(el.value);
+  });
+  document.getElementById("total").innerText = total;
+}
+
+function enviarWhats() {
+  let msg = "Olá, tenho interesse nos itens:%0A";
+  let total = 0;
+
+  document.querySelectorAll("input:checked").forEach(el => {
+    msg += "- " + el.parentNode.innerText + "%0A";
+    total += parseFloat(el.value);
+  });
+
+  msg += "%0ATotal: R$ " + total;
+
+  window.open(`https://wa.me/55SEUNUMERO?text=${msg}`);
+}
+</script>
+
+</body>
+</html>
