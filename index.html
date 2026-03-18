@@ -206,15 +206,22 @@ function filtrarProdutos() {
 }
 
 function selecionarTodos(master) {
-  document.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = master.checked);
+  document.querySelectorAll(".card input[type=checkbox]").forEach(cb => {
+    cb.checked = master.checked;
+  });
   calcular();
 }
 
 function calcular() {
   let total = 0;
-  document.querySelectorAll("input[type=checkbox]:checked").forEach(el => {
-    total += parseFloat(el.value);
+
+  document.querySelectorAll(".card input[type=checkbox]:checked").forEach(el => {
+    let valor = parseFloat(el.value);
+    if (!isNaN(valor)) {
+      total += valor;
+    }
   });
+
   document.getElementById("total").innerText = formatarPreco(total);
 }
 
@@ -222,9 +229,13 @@ function enviarWhats() {
   let msg = "Olá, tenho interesse:%0A";
   let total = 0;
 
-  document.querySelectorAll("input[type=checkbox]:checked").forEach(el => {
+  document.querySelectorAll(".card input[type=checkbox]:checked").forEach(el => {
     msg += "- " + el.dataset.nome + "%0A";
-    total += parseFloat(el.value);
+
+    let valor = parseFloat(el.value);
+    if (!isNaN(valor)) {
+      total += valor;
+    }
   });
 
   msg += "%0ATotal: R$ " + formatarPreco(total);
