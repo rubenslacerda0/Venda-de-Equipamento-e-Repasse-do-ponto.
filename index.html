@@ -73,9 +73,15 @@ header p {
   color: #555;
 }
 
-.preco {
+.preco-antigo {
+  text-decoration: line-through;
+  color: #888;
+  font-size: 14px;
+}
+
+.preco-novo {
   color: #ff3c00;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
 }
 
@@ -135,7 +141,8 @@ const produtos = [
   {
     nome: "Exemplo de Item",
     descricao: "Produto em ótimo estado, pronto para uso",
-    preco: 100,
+    precoNovo: 200,
+    precoVenda: 100,
     imagem: "https://via.placeholder.com/300"
   }
 ];
@@ -150,9 +157,12 @@ function carregarProdutos() {
         <div class="card-content">
           <h3>${p.nome}</h3>
           <p>${p.descricao}</p>
-          <div class="preco">R$ ${p.preco}</div>
+
+          <div class="preco-antigo">De: R$ ${p.precoNovo}</div>
+          <div class="preco-novo">Por: R$ ${p.precoVenda}</div>
+
           <div class="checkbox">
-            <input type="checkbox" value="${p.preco}" onchange="calcular()" data-nome="${p.nome}">
+            <input type="checkbox" value="${p.precoVenda}" onchange="calcular()" data-nome="${p.nome}">
             Selecionar
           </div>
         </div>
