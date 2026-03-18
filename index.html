@@ -20,10 +20,6 @@ header {
   padding: 20px;
 }
 
-.search-box {
-  margin-top: 15px;
-}
-
 .search-box input {
   width: 90%;
   max-width: 400px;
@@ -65,7 +61,6 @@ header {
   margin-top: 10px;
 }
 
-/* 🔥 BOTÃO FIXO */
 .footer {
   position: fixed;
   bottom: 0;
@@ -100,7 +95,6 @@ header {
     <input type="text" id="pesquisa" placeholder="🔍 Buscar item..." onkeyup="filtrarProdutos()">
   </div>
 
-  <!-- 🔥 SELECIONAR TODOS -->
   <div style="margin-top:10px;">
     <input type="checkbox" onclick="selecionarTodos(this)">
     Selecionar todos os itens
@@ -117,16 +111,30 @@ header {
 </div>
 
 <script>
-const produtos = [
-  {
-    nome: "Exemplo de Item",
-    descricao: "Produto em ótimo estado",
-    precoNovo: 200,
-    precoVenda: 100,
-    imagem: "https://via.placeholder.com/300"
-  }
-];
+// 🔥 CONEXÃO COM SUA PLANILHA
+const sheetID = "1k-6QC6mC8h7z7TL4lEnfXNKUNv8C4qWOdU48pqIw4c4";
+const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
 
+let produtos = [];
+
+fetch(url)
+  .then(res => res.text())
+  .then(data => {
+    const json = JSON.parse(data.substr(47).slice(0, -2));
+    const rows = json.table.rows;
+
+    produtos = rows.map(r => ({
+      nome: r.c[0]?.v || "",
+      descricao: r.c[1]?.v || "",
+      precoNovo: r.c[2]?.v || 0,
+      precoVenda: r.c[3]?.v || 0,
+      imagem: r.c[4]?.v || ""
+    }));
+
+    carregarProdutos(produtos);
+  });
+
+// 🔥 CARREGAR PRODUTOS
 function carregarProdutos(lista = produtos) {
   const container = document.getElementById("produtos");
   container.innerHTML = "";
@@ -159,6 +167,7 @@ function carregarProdutos(lista = produtos) {
   });
 }
 
+// 🔍 FILTRO
 function filtrarProdutos() {
   const termo = document.getElementById("pesquisa").value.toLowerCase();
 
@@ -170,6 +179,7 @@ function filtrarProdutos() {
   carregarProdutos(filtrados);
 }
 
+// ✔ SELECIONAR TODOS
 function selecionarTodos(master) {
   const checkboxes = document.querySelectorAll(".checkbox input");
   checkboxes.forEach(cb => {
@@ -178,6 +188,7 @@ function selecionarTodos(master) {
   calcular();
 }
 
+// 💰 SOMA
 function calcular() {
   let total = 0;
   document.querySelectorAll(".checkbox input:checked").forEach(el => {
@@ -186,6 +197,7 @@ function calcular() {
   document.getElementById("total").innerText = total.toFixed(2);
 }
 
+// 📲 WHATSAPP
 function enviarWhats() {
   let msg = "Olá, tenho interesse:%0A";
   let total = 0;
@@ -199,8 +211,6 @@ function enviarWhats() {
 
   window.open(`https://wa.me/556292510089?text=${msg}`);
 }
-
-carregarProdutos();
 </script>
 
 </body>
